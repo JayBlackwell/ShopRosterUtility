@@ -122,7 +122,7 @@ def process_member_data(df):
     return result_df, changes, stats
 
 # Set up the Streamlit app
-st.set_page_config(page_title="Golf Shop Roster Utility", page_icon="🏌️", layout="wide")
+st.set_page_config(page_title="Golf Shop Roster Utility", page_icon="solsticelogo.png", layout="wide")
 
 # App title and description
 st.title("Golf Shop Roster Utility")
