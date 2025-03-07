@@ -32,7 +32,7 @@ def process_member_data(df):
     status_text.text("Creating name keys for matching...")
     df['FullName'] = df['First Name'].str.strip().str.lower() + ' ' + df['Last Name'].str.strip().str.lower()
     
-    # Handle empty Member Card IDs - this is the key fix
+    # Handle empty Member Card IDs
     # Convert empty strings AND whitespace-only strings to NaN
     df['Member Card ID'] = df['Member Card ID'].astype(str)
     df['Member Card ID'] = df['Member Card ID'].replace(r'^\s*$', np.nan, regex=True)
@@ -122,19 +122,15 @@ def process_member_data(df):
     return result_df, changes, stats
 
 # Set up the Streamlit app
-st.set_page_config(page_title="Member Roster ID Merger", page_icon="solsticelogo.png", layout="wide")
+st.set_page_config(page_title="Golf Shop Roster Utility", page_icon="🏌️", layout="wide")
 
 # App title and description
 st.title("Golf Shop Roster Utility")
-st.markdown("""
-© Solstice Solutions | all rights reserved
-""")
-
-# Add a flag to show debugging info
-debug_mode = st.sidebar.checkbox("Debug Mode")
+st.markdown("© Solstice Solutions | all rights reserved")
 
 # File uploader
-uploaded_file = st.file_uploader("Upload your Excel roster file", type=['xlsx', 'xls'])
+st.write("Upload your Excel roster file")
+uploaded_file = st.file_uploader("", type=['xlsx', 'xls'])
 
 if uploaded_file is not None:
     # Load the data - Force GGS_ID to be treated as a string to prevent scientific notation
@@ -163,29 +159,6 @@ if uploaded_file is not None:
         # Show a preview of the data
         st.subheader("Data Preview")
         st.dataframe(df.head())
-        
-        # Show column info if debug mode is on
-        if debug_mode:
-            st.subheader("Column Information")
-            col_info = pd.DataFrame({
-                'Column': df.columns,
-                'Type': df.dtypes,
-                'Sample Value': [str(df[col].iloc[0]) if not df.empty else "N/A" for col in df.columns],
-                'Empty Count': [df[col].isna().sum() + (df[col].astype(str).str.strip() == '').sum() for col in df.columns]
-            })
-            st.dataframe(col_info)
-            
-            # Show Member Card ID values
-            if 'Member Card ID' in df.columns:
-                st.subheader("Member Card ID Sample")
-                id_sample = df[['First Name', 'Last Name', 'Member Card ID']].head(10)
-                st.dataframe(id_sample)
-                
-                # Count different types of empty values
-                na_count = df['Member Card ID'].isna().sum()
-                empty_str_count = (df['Member Card ID'].astype(str).str.strip() == '').sum() - na_count
-                st.write(f"NaN values: {na_count}")
-                st.write(f"Empty string values: {empty_str_count}")
         
         # Verify required columns exist
         required_columns = ['First Name', 'Last Name', 'Member Card ID']
